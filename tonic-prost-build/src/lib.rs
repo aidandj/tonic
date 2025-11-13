@@ -84,6 +84,7 @@ pub fn configure() -> Builder {
         generate_default_stubs: false,
         codec_path: "tonic_prost::ProstCodec".to_string(),
         skip_debug: HashSet::default(),
+        include_unknown_fields: Vec::new(),
     }
 }
 
@@ -408,6 +409,7 @@ pub struct Builder {
     generate_default_stubs: bool,
     codec_path: String,
     skip_debug: HashSet<String>,
+    include_unknown_fields: Vec<(String, String)>,
 }
 
 impl Builder {
@@ -688,6 +690,19 @@ impl Builder {
         self
     }
 
+    /// Include unknown fields in generated messages.
+    ///
+    /// Passed directly to `prost_build::Config.include_unknown_fields`.
+    pub fn include_unknown_fields<P, A>(mut self, path: P, field_name: A) -> Self
+    where
+        P: AsRef<str>,
+        A: AsRef<str>,
+    {
+        self.include_unknown_fields
+            .push((path.as_ref().to_string(), field_name.as_ref().to_string()));
+        self
+    }
+
     /// Compile the .proto files and execute code generation.
     pub fn compile_protos<P>(self, protos: &[P], includes: &[P]) -> io::Result<()>
     where
@@ -775,6 +790,10 @@ impl Builder {
 
         if self.skip_protoc_run {
             config.skip_protoc_run();
+        }
+
+        for (prost_path, field_name) in &self.include_unknown_fields {
+            config.include_unknown_fields(prost_path, field_name);
         }
 
         if self.build_client || self.build_server {
@@ -877,6 +896,10 @@ impl Builder {
 
         if self.skip_protoc_run {
             config.skip_protoc_run();
+        }
+
+        for (prost_path, field_name) in &self.include_unknown_fields {
+            config.include_unknown_fields(prost_path, field_name);
         }
 
         if self.build_client || self.build_server {
