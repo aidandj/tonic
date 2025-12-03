@@ -42,3 +42,9 @@ uninlined_format_args = "deny"
 
 [workspace.lints.rustdoc]
 broken_intra_doc_links = "deny"
+
+[patch.crates-io]
+# https://github.com/tokio-rs/prost/pull/1340
+prost = { git = "https://github.com/blizzardfinnegan/prost.git", rev = "d20b25c7ad45182da894ed7a559f869360c4bc36" }
+prost-build = { git = "https://github.com/blizzardfinnegan/prost.git", rev = "d20b25c7ad45182da894ed7a559f869360c4bc36" }
+prost-types = { git = "https://github.com/blizzardfinnegan/prost.git", rev = "d20b25c7ad45182da894ed7a559f869360c4bc36" }
